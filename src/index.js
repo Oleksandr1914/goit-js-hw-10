@@ -9,11 +9,15 @@ const getEl = x => document.querySelector(x);
 getEl('#search-box').addEventListener(
   'input',
   debounce(event => {
-    fetchCountries(event)
-      .then(response => addCountries(response))
-      .catch(() =>
-        Notiflix.Notify.failure('Oops, there is no country with that name')
-      );
+    if (event.target.value) {
+      fetchCountries(event)
+        .then(response => addCountries(response))
+        .catch(() =>
+          Notiflix.Notify.failure('Oops, there is no country with that name')
+        );
+    } else {
+      getEl('.country-list').innerHTML = '';
+    }
   }, DEBOUNCE_DELAY)
 );
 
@@ -25,7 +29,7 @@ function addCountries(resp) {
     <img src=${resp[0].flags.svg} alt=${resp[0].name} width=40px height=40px>
     <h1>${resp[0].name.official}</h1>
     </div>
-    <div">
+    <div>
     <ul>
     <li><span>capital:</span> ${resp[0].capital.join('')}</li>
     <li><span>population:</span> ${resp[0].population}</li>
@@ -37,7 +41,10 @@ function addCountries(resp) {
     const arrCountries = resp
       .map(
         countri =>
-          `<li class="country-item"><img src=${countri.flags.svg} alt=${countri.name} width=40px height=40px><h1>${countri.name.official}</h1></li>`
+          `<li class="country-item">
+          <img src=${countri.flags.svg} alt=${countri.name} width=40px height=40px>
+          <h1>${countri.name.official}</h1>
+          </li>`
       )
       .join('');
     getEl('.country-list').innerHTML = arrCountries;
